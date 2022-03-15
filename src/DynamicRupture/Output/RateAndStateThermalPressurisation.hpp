@@ -6,7 +6,6 @@
 namespace seissol::dr::output {
 class RateAndStateThermalPressurisation : public RateAndState {
   public:
-  using RateAndState::postCompute;
   using RateAndState::RateAndState;
   using RateAndState::tiePointers;
 
