@@ -71,7 +71,10 @@ bool seissol::SeisSol::init(int argc, char* argv[])
 	// Construct an instance of AsagiModule, to initialize it.
 	// It needs to be done here, as it registers PRE_MPI hooks
 	asagi::AsagiModule::getInstance();
+#else
+  logInfo(rank) << "Not using ASAGI";
 #endif
+	  
 	// Call pre MPI hooks
 	seissol::Modules::callHook<seissol::PRE_MPI>();
 
@@ -97,20 +100,28 @@ bool seissol::SeisSol::init(int argc, char* argv[])
 
 #ifdef USE_MPI
   logInfo(rank) << "Using MPI with #ranks:" << MPI::mpi.size();
+#else
+  logInfo(rank) << "Not using MPI.";
 #endif
+	  
 #ifdef _OPENMP
   logInfo(rank) << "Using OMP with #threads/rank:" << omp_get_max_threads();
   logInfo(rank) << "OpenMP worker affinity (this process):" << parallel::Pinning::maskToString(
       pinning.getWorkerUnionMask());
   logInfo(rank) << "OpenMP worker affinity (this node)   :" << parallel::Pinning::maskToString(
       pinning.getNodeMask());
+#else
+  logInfo(rank) << "Not using OMP.";
 #endif
+	  
 #ifdef USE_COMM_THREAD
   auto freeCpus = pinning.getFreeCPUsMask();
   logInfo(rank) << "Communication thread affinity        :" << parallel::Pinning::maskToString(freeCpus);
   if (parallel::Pinning::freeCPUsMaskEmpty(freeCpus)) {
     logError() << "There are no free CPUs left. Make sure to leave one for the communication thread.";
   }
+#else
+  logInfo(rank) << "Not using a communication thread.";
 #endif // _OPENMP
 
 #ifdef ACL_DEVICE
